@@ -27,7 +27,7 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public void add(T item) {
-        if(front == null && back == null) {
+        if (front == null && back == null) {
             Node<T> temp = new Node<T>(item);
             front.next = temp;
             front.prev = null;
@@ -43,18 +43,18 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public T remove() {
-        if(back.prev != null) {
+        if (back.prev != null) {
             back = back.prev;
             back.next = null;
             size--;
         }
-        return front;
+        return front.data;
     }
 
     @Override
     public T get(int index) {
         Node<T> temp = front;
-        for(int i = 0; i < index; i++) {
+        for (int i = 0; i < index; i++) {
             temp = temp.next;
         }
         return temp.data;
@@ -63,7 +63,7 @@ public class DoubleLinkedList<T> implements IList<T> {
     @Override
     public void set(int index, T item) {
         Node<T> temp = front;
-        for(int i = 0; i < index; i++) {
+        for (int i = 0; i < index - 1; i++) {
             temp = temp.next;
         }
         temp.data = item;
@@ -72,7 +72,7 @@ public class DoubleLinkedList<T> implements IList<T> {
     @Override
     public void insert(int index, T item) {
         Node<T> temp = front;
-        for(int i = 0; i < index - 1; i++) {
+        for (int i = 0; i < index - 1; i++) {
             temp = temp.next;
         }
         Node<T> nextTemp = temp.next;
@@ -84,25 +84,31 @@ public class DoubleLinkedList<T> implements IList<T> {
     @Override
     public T delete(int index) {
         Node<T> temp = front;
-        for(int i = 0; i < index - 1; i++) {
+        for (int i = 0; i < index - 1; i++) {
             temp = temp.next;
         }
         Node<T> nextTemp = temp.next;
-        if(nextTemp.next != null) {
+        if (nextTemp.next != null) {
             nextTemp = nextTemp.next;
         }
         temp.next = nextTemp;
         nextTemp.prev = temp;
-        return front;
+        return front.data;
     }
 
     @Override
     public int indexOf(T item) {
         Node<T> temp = front;
-        while(temp.next != null) {
+        boolean foundIndex = false;
+        int index = 0;
+        while (!foundIndex) {
+        		index++;
+        		if(temp.data == item) {
+        			foundIndex = true;
+        		}
             temp = temp.next;
         }
-        return temp.data;
+        return index;
     }
 
     @Override
@@ -113,8 +119,8 @@ public class DoubleLinkedList<T> implements IList<T> {
     @Override
     public boolean contains(T other) {
         Node<T> temp = front;
-        while(temp.next != null) {
-            if(temp.data = other.data) {
+        while (temp.next != null) {
+            if (temp.data == other) {
                 return true;
             }
             temp = temp.next;
@@ -175,11 +181,11 @@ public class DoubleLinkedList<T> implements IList<T> {
          *         there are no more elements to look at.
          */
         public T next() {
-            if(!hasNext()) {
+            if (!hasNext()) {
                 throw new NoSuchElementException();
             } else {
                 current = current.next;
-                return current;
+                return current.data;
             }
         }
     }

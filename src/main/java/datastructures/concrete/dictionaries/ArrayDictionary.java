@@ -15,7 +15,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     // You're encouraged to add extra fields (and helper methods) though!
 
     public ArrayDictionary() {
-        throw new UnsupportedOperationException();
+        this.pairs = [];
     }
 
     /**
@@ -42,12 +42,30 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 
     @Override
     public V get(K key) {
-        throw new NotYetImplementedException();
+        for (int i = 0; i < pairs.length; i++) {
+            if(pairs[i].key == key) {
+                return pairs[i].value;
+            }
+        }
+        return null;
     }
 
     @Override
     public void put(K key, V value) {
-        throw new NotYetImplementedException();
+        int index = 0;
+        int foundKey = false;
+        for (int i = 0; i < pairs.length; i++) {
+            if(pairs[i].key == key) {
+                foundKey = true;
+                index = i;
+            }
+        }
+        if (foundKey) {
+            pairs[i].value = value;
+        } else {
+            pairs[pairs.length+1].key = key;
+            pairs[pairs.length+1].value = value;
+        }
     }
 
     @Override
@@ -57,12 +75,17 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 
     @Override
     public boolean containsKey(K key) {
-        throw new NotYetImplementedException();
+        for (int i = 0; i < pairs.length; i++) {
+            if(pairs[i].key == key) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public int size() {
-        throw new NotYetImplementedException();
+        return pairs.length;
     }
 
     private static class Pair<K, V> {
