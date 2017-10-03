@@ -526,13 +526,36 @@ public class TestDoubleLinkedList extends BaseTest {
     }
     
     @Test(timeout=SECOND)
-    public void testDeleteHappyCase() {
-    	
+    public void testDeleteNonEdgeNodes() {
+    	IList<String> list = makeBasicList();
+    	list.add("d");
+    	list.add("e");
+    	this.assertListMatches(new String[]{"a", "b", "c", "d", "e"}, list);
+    	list.delete(1);
+    	this.assertListMatches(new String[]{"a", "c", "d", "e"}, list);
+    	list.delete(1);
+    	this.assertListMatches(new String[]{"a", "d", "e"}, list);
+    	list.delete(1);
+    	this.assertListMatches(new String[]{"a", "e"}, list);    	
     }
     
     @Test(timeout=SECOND)
-    public void testDeleteEdgeCases() {
-    	
+    public void testDeleteFrontNode() {
+    	IList<String> list = makeBasicList();
+    	this.assertListMatches(new String[]{"a", "b", "c"}, list);
+    	list.delete(0);
+    	this.assertListMatches(new String[]{"b", "c"}, list);
+    	list.delete(0);
+    	this.assertListMatches(new String[]{"c"}, list);
+    }
+    
+    @Test(timeout=SECOND)
+    public void testDeleteBackNode() {
+    	IList<String> list = makeBasicList();
+    	for (int i = list.size() - 1; i > 0; i--) {
+    		list.delete(i);
+    	}
+    	this.assertListMatches(new String[]{"a"}, list);
     }
     
     @Test(timeout=SECOND)
