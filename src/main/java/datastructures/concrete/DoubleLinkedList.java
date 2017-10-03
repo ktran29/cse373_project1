@@ -2,7 +2,7 @@ package datastructures.concrete;
 
 import datastructures.interfaces.IList;
 import misc.exceptions.EmptyContainerException;
-import misc.exceptions.NotYetImplementedException;
+//import misc.exceptions.NotYetImplementedException;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -54,10 +54,10 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public T get(int index) {
-        if(index > size - 1) {
+        if (index > size - 1) {
             throw new IndexOutOfBoundsException();
         }
-        if(front != null) {
+        if (front != null) {
             Node<T> temp = front;
             for (int i = 0; i < index - 1; i++) {
                 temp = temp.next;
@@ -69,12 +69,14 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public void set(int index, T item) {
-        if(index > size - 1) {
+        if (index > size - 1) {
             throw new IndexOutOfBoundsException();
         }
         Node<T> temp = front;
-        for (int i = 0; i < index - 1; i++) {
-            temp = temp.next;
+        for (int i = 0; i < index; i++) {
+        		if (temp.next != null) {
+        			temp = temp.next;	
+        		}
         }
         Node<T> newEntry = new Node<T>(temp.prev, item, temp.next);
         temp = newEntry;
@@ -82,49 +84,54 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public void insert(int index, T item) {
-        Node<T> temp = front;
-        if(index == 0) {
-            Node<T> newEntry = new Node<T>(null, item, front);
-            front = newEntry;
-        } else {
-            for (int i = 0; i < index; i++) {
-                temp = temp.next;
-            }
-            Node<T> newEntry = new Node<T>(temp, item, temp.next);
-            temp.next = newEntry;
-        }
+    		if (item != null) {
+    			Node<T> temp = front;
+    	        if (index == 0) {
+    	            Node<T> newEntry = new Node<T>(null, item, front);
+    	            front = newEntry;
+    	        } else {
+    	            for (int i = 0; i < index; i++) {
+    	                temp = temp.next;
+    	            }
+    	            Node<T> newEntry = new Node<T>(temp, item, temp.next);
+    	            temp.next = newEntry;
+    	        }
+    		}
     }
 
     @Override
     public T delete(int index) {
         Node<T> temp = front;
-        for (int i = 0; i < index - 1; i++) {
-            temp = temp.next;
+        for (int i = 0; i < index; i++) {
+        		if(temp.next != null) {
+        			temp = temp.next;
+        		}
         }
-        Node<T> nextTemp = temp.next;
-        if (nextTemp.next != null) {
-            nextTemp = nextTemp.next;
+        T returnedValue = temp.data;
+        if (temp.next == null) {
+        		temp.prev = null;
+        } else {
+        		temp.prev = temp.next;
         }
-        temp.next = nextTemp;
-        nextTemp.prev = temp;
-        return front.data;
+        size--;
+        return returnedValue;
     }
 
     @Override
     public int indexOf(T item) {
         int index = -1;
-        if(front != null) {
+        if (front != null) {
             index = 0;
             Node<T> temp = front;
             boolean foundIndex = false;
             while (!foundIndex && temp != null) {
-                if(temp.data == item) {
+                if (temp.data == item) {
                     foundIndex = true;
                 }
                 index++;
                 temp = temp.next;
             }
-            if(!foundIndex) {
+            if (!foundIndex) {
                 index = -1;
             }
         }
