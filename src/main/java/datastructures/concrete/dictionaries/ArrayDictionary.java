@@ -53,9 +53,9 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     @Override
     public void put(K key, V value) {
         int index = 0;
-        int foundKey = false;
+        boolean foundKey = false;
         for (int i = 0; i < pairs.length; i++) {
-            if(pairs[i].key == key) {
+            if (pairs[i].key == key) {
                 foundKey = true;
                 index = i;
             }
@@ -63,14 +63,21 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
         if (foundKey) {
             pairs[i].value = value;
         } else {
-            pairs[pairs.length+1].key = key;
-            pairs[pairs.length+1].value = value;
+            pairs[pairs.length+1] = new Pair(key, value);
         }
     }
 
     @Override
     public V remove(K key) {
-        throw new NotYetImplementedException();
+        int index = 0;
+        for (int i = 0; i < pairs.length; i++) {
+            if (pairs[i].key == key) {
+                index = i;
+                pairs.splice(index, 1);
+            }
+        }
+        Pair removedValue = pairs[i];
+        return removedValue.value;
     }
 
     @Override

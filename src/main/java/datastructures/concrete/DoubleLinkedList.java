@@ -66,7 +66,9 @@ public class DoubleLinkedList<T> implements IList<T> {
         for (int i = 0; i < index - 1; i++) {
             temp = temp.next;
         }
-        temp.data = item;
+        Node<T> newEntry = new Node<T>(temp.prev, item, temp.next);
+        temp.prev.next = newEntry;
+        temp.next.prev = newEntry;
     }
 
     @Override
