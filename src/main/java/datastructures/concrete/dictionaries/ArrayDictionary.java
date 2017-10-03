@@ -47,7 +47,8 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
                 return pairs[i].value;
             }
         }
-        return null;
+        throw new NoSuchKeyException(); // Only gets here if no key found
+        // return null;
     }
 
     @Override
@@ -57,27 +58,43 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
         for (int i = 0; i < pairs.length; i++) {
             if (pairs[i].key == key) {
                 foundKey = true;
-                index = i;
+                index = i - 1;
+                i = pairs.length;
             }
+            else if (pairs[i] == null) {
+            	index = i - 1;
+            	i = pairs.length;
+            }
+            index++;
         }
         if (foundKey) {
-            pairs[i].value = value;
+            pairs[index].value = value;
+        } else if (index >= pairs.length) {
+        	Pair<K, V>[] newPairs = makeArrayOfPairs(pairs.length * 2);
+        	for (int i = 0; i < newPairs.length; i++) {
+        		newPairs[i] = pairs[i];
+        	}
+        	pairs = newPairs;
+        	pairs[index] = new Pair(key, value);
         } else {
-            pairs[pairs.length+1] = new Pair(key, value);
+        	pairs[index] = new Pair(key, value);
         }
     }
 
     @Override
     public V remove(K key) {
-        int index = 0;
+        V removedValue = -1;
         for (int i = 0; i < pairs.length; i++) {
             if (pairs[i].key == key) {
-                index = i;
-                pairs.splice(index, 1);
+                removedValue = pairs[i].value;
+                pairs[i] = null;
+                for (int j = i; j < pairs.length; j++) {
+                	pairs[j] = pairs[j + 1];
+                }
+                return removedValue;
             }
         }
-        Pair removedValue = pairs[i];
-        return removedValue.value;
+        throw new NoSuchKeyExecption();
     }
 
     @Override
