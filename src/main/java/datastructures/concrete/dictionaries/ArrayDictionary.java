@@ -15,7 +15,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     // You're encouraged to add extra fields (and helper methods) though!
 
     public ArrayDictionary() {
-        this.pairs = [];
+    	this.pairs = makeArrayOfPairs(4);
     }
 
     /**
@@ -43,7 +43,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     @Override
     public V get(K key) {
         for (int i = 0; i < pairs.length; i++) {
-            if(pairs[i].key == key) {
+            if(pairs[i] != null && pairs[i].key == key) {
                 return pairs[i].value;
             }
         }
@@ -56,14 +56,14 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
         int index = 0;
         boolean foundKey = false;
         for (int i = 0; i < pairs.length; i++) {
-            if (pairs[i].key == key) {
+        	if (pairs[i] == null) {
+            	index = i - 1;
+            	i = pairs.length;
+            }
+        	else if (pairs[i].key == key) {
                 foundKey = true;
                 index = i - 1;
                 i = pairs.length;
-            }
-            else if (pairs[i] == null) {
-            	index = i - 1;
-            	i = pairs.length;
             }
             index++;
         }
@@ -71,7 +71,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
             pairs[index].value = value;
         } else if (index >= pairs.length) {
         	Pair<K, V>[] newPairs = makeArrayOfPairs(pairs.length * 2);
-        	for (int i = 0; i < newPairs.length; i++) {
+        	for (int i = 0; i < pairs.length; i++) {
         		newPairs[i] = pairs[i];
         	}
         	pairs = newPairs;
@@ -94,7 +94,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
                 return removedValue;
             }
         }
-        throw new NoSuchKeyExecption();
+        throw new NoSuchKeyException();
     }
 
     @Override
@@ -109,7 +109,15 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 
     @Override
     public int size() {
-        return pairs.length;
+    	int pairCount = 0;
+    	for (int i = 0; i < pairs.length; i++) {
+    		if (pairs[i] != null) {
+    			pairCount++;
+    		} else {
+    			i = pairs.length;
+    		}
+    	}
+        return pairCount;
     }
 
     private static class Pair<K, V> {
