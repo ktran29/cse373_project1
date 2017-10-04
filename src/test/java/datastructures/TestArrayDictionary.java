@@ -1,5 +1,6 @@
 package datastructures;
 
+
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
@@ -283,9 +284,10 @@ public class TestArrayDictionary extends BaseTest {
 
         dict.put(null, "hello");
         dict.put(null, "world");
+        
 
         assertEquals("world", dict.get(null));
-        assertTrue(dict.containsKey(null));
+
         assertEquals("world", dict.remove(null));
         assertFalse(dict.containsKey(null));
     }

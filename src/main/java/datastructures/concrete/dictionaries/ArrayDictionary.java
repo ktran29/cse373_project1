@@ -2,7 +2,6 @@ package datastructures.concrete.dictionaries;
 
 import datastructures.interfaces.IDictionary;
 import misc.exceptions.NoSuchKeyException;
-import misc.exceptions.NotYetImplementedException;
 
 /**
  * See IDictionary for more details on what this class should do
@@ -43,7 +42,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     @Override
     public V get(K key) {
         for (int i = 0; i < pairs.length; i++) {
-            if(pairs[i] != null && pairs[i].key.equals(key)) {
+            if(pairs[i] != null && (pairs[i].key == key || pairs[i].key.equals(key))) {
                 return pairs[i].value;
             }
         }
@@ -83,7 +82,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     @Override
     public V remove(K key) {
         for (int i = 0; i < pairs.length; i++) {
-            if (pairs[i] != null && pairs[i].key.equals(key)) {
+            if (pairs[i] != null && (pairs[i].key == key || pairs[i].key.equals(key))) {
                 V removedValue = pairs[i].value;
                 pairs[i] = null;
                 for (int j = i; j < pairs.length - 1; j++) {
@@ -99,7 +98,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     @Override
     public boolean containsKey(K key) {
         for (int i = 0; i < pairs.length; i++) {
-            if(pairs[i] != null && pairs[i].key.equals(key)) {
+            if(pairs[i] != null && (pairs[i].key == key || pairs[i].key.equals(key))) {
                 return true;
             }
         }
