@@ -43,12 +43,11 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     @Override
     public V get(K key) {
         for (int i = 0; i < pairs.length; i++) {
-            if(pairs[i] != null && pairs[i].key == key) {
+            if(pairs[i] != null && pairs[i].key.equals(key)) {
                 return pairs[i].value;
             }
         }
         throw new NoSuchKeyException(); // Only gets here if no key found
-        // return null;
     }
 
     @Override
@@ -75,22 +74,22 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
         		newPairs[i] = pairs[i];
         	}
         	pairs = newPairs;
-        	pairs[index] = new Pair(key, value);
+        	pairs[index] = new Pair<K, V>(key, value);
         } else {
-        	pairs[index] = new Pair(key, value);
+        	pairs[index] = new Pair<K, V>(key, value);
         }
     }
 
     @Override
     public V remove(K key) {
-        V removedValue = -1;
         for (int i = 0; i < pairs.length; i++) {
-            if (pairs[i].key == key) {
-                removedValue = pairs[i].value;
+            if (pairs[i] != null && pairs[i].key.equals(key)) {
+                V removedValue = pairs[i].value;
                 pairs[i] = null;
-                for (int j = i; j < pairs.length; j++) {
+                for (int j = i; j < pairs.length - 1; j++) {
                 	pairs[j] = pairs[j + 1];
                 }
+                pairs[pairs.length - 1] = null;
                 return removedValue;
             }
         }
@@ -100,7 +99,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     @Override
     public boolean containsKey(K key) {
         for (int i = 0; i < pairs.length; i++) {
-            if(pairs[i].key == key) {
+            if(pairs[i] != null && pairs[i].key.equals(key)) {
                 return true;
             }
         }
