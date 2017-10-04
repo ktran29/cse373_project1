@@ -48,7 +48,6 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
             }
         }
         throw new NoSuchKeyException(); // Only gets here if no key found
-        // return null;
     }
 
     @Override
@@ -75,9 +74,9 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
         		newPairs[i] = pairs[i];
         	}
         	pairs = newPairs;
-        	pairs[index] = new Pair(key, value);
+        	pairs[index] = new Pair<K, V>(key, value);
         } else {
-        	pairs[index] = new Pair(key, value);
+        	pairs[index] = new Pair<K, V>(key, value);
         }
     }
 
@@ -90,6 +89,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
                 for (int j = i; j < pairs.length - 1; j++) {
                 	pairs[j] = pairs[j + 1];
                 }
+                pairs[pairs.length - 1] = null;
                 return removedValue;
             }
         }
