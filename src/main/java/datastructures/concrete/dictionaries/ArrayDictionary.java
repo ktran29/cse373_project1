@@ -83,12 +83,11 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 
     @Override
     public V remove(K key) {
-        V removedValue = -1;
         for (int i = 0; i < pairs.length; i++) {
-            if (pairs[i].key == key) {
-                removedValue = pairs[i].value;
+            if (pairs[i] != null && pairs[i].key == key) {
+                V removedValue = pairs[i].value;
                 pairs[i] = null;
-                for (int j = i; j < pairs.length; j++) {
+                for (int j = i; j < pairs.length - 1; j++) {
                 	pairs[j] = pairs[j + 1];
                 }
                 return removedValue;
@@ -100,7 +99,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     @Override
     public boolean containsKey(K key) {
         for (int i = 0; i < pairs.length; i++) {
-            if(pairs[i].key == key) {
+            if(pairs[i] != null && pairs[i].key == key) {
                 return true;
             }
         }
