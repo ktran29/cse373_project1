@@ -2,7 +2,7 @@
  * CSE 373
  * Project 1 - Part 1
  * ArrayDictionary class
- * 
+ *
  * Marcus Deichman and Kevin Tran
  */
 
@@ -44,11 +44,10 @@ public class DoubleLinkedList<T> implements IList<T> {
             back = newNode;
         } else {
             Node<T> newNode = new Node<T>(back, item, null);
-            Node<T> temp = back;
-            temp.next = newNode;
+            back.next = newNode;
             back = newNode;
         }
-        this.size++;
+        size++;
     }
 
     /**
@@ -201,8 +200,8 @@ public class DoubleLinkedList<T> implements IList<T> {
         				temp.prev.next = temp.next;
         				temp.next.prev = temp.prev;
         			}
+                    size--;
         		}
-        		size--;
         }
         return returnedValue;
     }
@@ -217,7 +216,7 @@ public class DoubleLinkedList<T> implements IList<T> {
     public int indexOf(T item) {
         if (front != null) {
             int index = 0;
-            Node<T> temp = this.front;
+            Node<T> temp = front;
             while (temp != null) {
                 if (temp.data == item || temp.data.equals(item)) {
                     return index;
@@ -313,7 +312,7 @@ public class DoubleLinkedList<T> implements IList<T> {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             } else {
-            		T returnedValue = current.data;
+            	T returnedValue = current.data;
                 current = current.next;
                 return returnedValue;
             }
