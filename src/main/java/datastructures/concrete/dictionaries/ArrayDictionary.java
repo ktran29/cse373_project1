@@ -1,3 +1,11 @@
+/**
+ * CSE 373
+ * Project 1 - Part 1
+ * ArrayDictionary class
+ * 
+ * Marcus Deichman and Kevin Tran
+ */
+
 package datastructures.concrete.dictionaries;
 
 import datastructures.interfaces.IDictionary;
@@ -39,16 +47,25 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 
     }
 
+    /**
+     * Returns the value corresponding to the given key.
+     *
+     * @throws NoSuchKeyException if the dictionary does not contain the given key.
+     */
     @Override
     public V get(K key) {
         for (int i = 0; i < pairs.length; i++) {
-            if(pairs[i] != null && (pairs[i].key == key || pairs[i].key.equals(key))) {
+            if (pairs[i] != null && (pairs[i].key == key || pairs[i].key.equals(key))) {
                 return pairs[i].value;
             }
         }
         throw new NoSuchKeyException(); // Only gets here if no key found
     }
 
+    /**
+     * Adds the key-value pair to the dictionary. If the key already exists in the dictionary,
+     * replace its value with the given one.
+     */
     @Override
     public void put(K key, V value) {
         int index = 0;
@@ -79,6 +96,11 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
         }
     }
 
+    /**
+     * Remove the key-value pair corresponding to the given key from the dictionary.
+     *
+     * @throws NoSuchKeyException if the dictionary does not contain the given key.
+     */
     @Override
     public V remove(K key) {
         for (int i = 0; i < pairs.length; i++) {
@@ -95,16 +117,22 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
         throw new NoSuchKeyException();
     }
 
+    /**
+     * Returns 'true' if the dictionary contains the given key and 'false' otherwise.
+     */
     @Override
     public boolean containsKey(K key) {
         for (int i = 0; i < pairs.length; i++) {
-            if(pairs[i] != null && (pairs[i].key == key || pairs[i].key.equals(key))) {
+            if (pairs[i] != null && (pairs[i].key == key || pairs[i].key.equals(key))) {
                 return true;
             }
         }
         return false;
     }
 
+    /**
+     * Returns the number of key-value pairs stored in this dictionary.
+     */
     @Override
     public int size() {
     	int pairCount = 0;

@@ -1,3 +1,11 @@
+/**
+ * CSE 373
+ * Project 1 - Part 1
+ * ArrayDictionary class
+ * 
+ * Marcus Deichman and Kevin Tran
+ */
+
 package datastructures.concrete;
 
 import datastructures.interfaces.IList;
@@ -25,6 +33,9 @@ public class DoubleLinkedList<T> implements IList<T> {
         this.size = 0;
     }
 
+    /**
+     * Adds the given item to the *end* of this IList.
+     */
     @Override
     public void add(T item) {
         if (front == null && back == null) {
@@ -40,6 +51,11 @@ public class DoubleLinkedList<T> implements IList<T> {
         this.size++;
     }
 
+    /**
+     * Removes and returns the item from the *end* of this IList.
+     *
+     * @throws EmptyContainerException if the container is empty and there is no element to remove.
+     */
     @Override
     public T remove() {
         if (size == 0) {
@@ -48,8 +64,8 @@ public class DoubleLinkedList<T> implements IList<T> {
             T returnedValue = back.data;
             back = back.prev;
             size--;
-            if(size == 0) {
-            		front = null;
+            if (size == 0) {
+            	front = null;
             }
             return returnedValue;
         } else {
@@ -57,6 +73,11 @@ public class DoubleLinkedList<T> implements IList<T> {
         }
     }
 
+    /**
+     * Returns the item located at the given index.
+     *
+     * @throws IndexOutOfBoundsException if the index < 0 or index >= this.size()
+     */
     @Override
     public T get(int index) {
 		if (index < 0 || index > size - 1) {
@@ -72,6 +93,11 @@ public class DoubleLinkedList<T> implements IList<T> {
         return null;
     }
 
+    /**
+     * Overwrites the element located at the given index with the new item.
+     *
+     * @throws IndexOutOfBoundsException if the index < 0 or index >= this.size()
+     */
     @Override
     public void set(int index, T item) {
         if (index > size - 1 || index < 0) {
@@ -79,58 +105,71 @@ public class DoubleLinkedList<T> implements IList<T> {
         }
         Node<T> temp = front;
         for (int i = 0; i < index; i++) {
-        		if (temp.next != null) {
-        			temp = temp.next;
-        		}
+        	if (temp.next != null) {
+        		temp = temp.next;
+        	}
         }
         Node<T> newEntry = new Node<T>(temp.prev, item, temp.next);
         if (temp.prev != null) {
-        		temp.prev.next = newEntry;
+        	temp.prev.next = newEntry;
         } else {
-        		front = newEntry;
+        	front = newEntry;
         }
-        if(temp.next != null) {
-        		temp.next.prev = newEntry;
+        if (temp.next != null) {
+        	temp.next.prev = newEntry;
         } else {
-        		back = newEntry;
+        	back = newEntry;
         }
     }
 
+    /**
+     * Inserts the given item at the given index. If there already exists an element
+     * at that index, shift over that element and any subsequent elements one index
+     * higher.
+     *
+     * @throws IndexOutOfBoundsException if the index < 0 or index >= this.size() + 1
+     */
     @Override
     public void insert(int index, T item) {
 		if (index < 0 || index > size) {
 			throw new IndexOutOfBoundsException();
 		}
-			Node<T> temp = front;
-	        if (index == 0) {
-	            Node<T> newEntry = new Node<T>(null, item, front);
-	            front = newEntry;
-	            if(size == 0) {
-	            		back = newEntry;
-	            }
-	        } else if (index == size) {
-	        		Node<T> newEntry = new Node<T>(back, item, null);
-	        		if(back != null) {
-	        			back.next = newEntry;
-	        		}
-	        		back = newEntry;
-			} else if (index > size / 2) {
-				temp = back;
-				for (int i = size - 1; i > index; i--) {
-	                temp = temp.prev;
-	            }
-	            Node<T> newEntry = new Node<T>(temp.prev, item, temp);
-	            temp.prev = newEntry;
-			} else {
-	            for (int i = 0; i < index - 1; i++) {
-	                temp = temp.next;
-	            }
-	            Node<T> newEntry = new Node<T>(temp, item, temp.next);
-	            temp.next = newEntry;
+		Node<T> temp = front;
+	    if (index == 0) {
+	        Node<T> newEntry = new Node<T>(null, item, front);
+	        front = newEntry;
+	        if (size == 0) {
+	            back = newEntry;
 	        }
-	        size++;
+	    } else if (index == size) {
+	        Node<T> newEntry = new Node<T>(back, item, null);
+	        if(back != null) {
+	        	back.next = newEntry;
+	        }
+	        back = newEntry;
+		} else if (index > size / 2) {
+			temp = back;
+			for (int i = size - 1; i > index; i--) {
+	            temp = temp.prev;
+	        }
+	        Node<T> newEntry = new Node<T>(temp.prev, item, temp);
+	        temp.prev = newEntry;
+		} else {
+	        for (int i = 0; i < index - 1; i++) {
+	            temp = temp.next;
+	        }
+	        Node<T> newEntry = new Node<T>(temp, item, temp.next);
+	        temp.next = newEntry;
+	    }
+	    size++;
     }
 
+    /**
+     * Deletes the item at the given index. If there are any elements located at a higher
+     * index, shift them all down by one.
+     *
+     * @throws IndexOutOfBoundsException if the index < 0 or index >= this.size()
+     */
     @Override
     public T delete(int index) {
         Node<T> temp = front;
@@ -154,7 +193,7 @@ public class DoubleLinkedList<T> implements IList<T> {
         		for (int i = 0; i < index; i++) {
         			temp = temp.next;
         		}
-        		if(temp != null) {
+        		if (temp != null) {
         			returnedValue = temp.data;
         			if (temp.next == null) {
         				temp.prev.next = null;
@@ -168,6 +207,12 @@ public class DoubleLinkedList<T> implements IList<T> {
         return returnedValue;
     }
 
+    /**
+     * Returns the index corresponding to the first occurrence of the given item
+     * in the list.
+     *
+     * If the item does not exist in the list, return -1.
+     */
     @Override
     public int indexOf(T item) {
         if (front != null) {
@@ -177,8 +222,8 @@ public class DoubleLinkedList<T> implements IList<T> {
                 if (temp.data == item || temp.data.equals(item)) {
                     return index;
                 } else {
-                		index++;
-                		temp = temp.next;
+                	index++;
+                	temp = temp.next;
                 }
             }
         }
@@ -186,23 +231,32 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     }
 
+    /**
+     * Returns the number of elements in the container.
+     */
     @Override
     public int size() {
         return size;
     }
 
+    /**
+     * Returns 'true' if this container contains the given element, and 'false' otherwise.
+     */
     @Override
     public boolean contains(T other) {
         Node<T> temp = front;
         while (temp != null) {
-        		if (temp.data == other || temp.data.equals(other)) {
-        			return true;
-        		}
-        		temp = temp.next;
+        	if (temp.data == other || temp.data.equals(other)) {
+        		return true;
+        	}
+        	temp = temp.next;
         }
         return false;
     }
 
+    /**
+     * Returns an iterator over the contents of this list.
+     */
     @Override
     public Iterator<T> iterator() {
         // Note: we have provided a part of the implementation of

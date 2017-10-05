@@ -1,3 +1,11 @@
+/**
+ * CSE 373
+ * Project 1 - Part 1
+ * ArrayDictionary class
+ * 
+ * Marcus Deichman and Kevin Tran
+ */
+
 package datastructures;
 
 import static org.junit.Assert.assertTrue;
