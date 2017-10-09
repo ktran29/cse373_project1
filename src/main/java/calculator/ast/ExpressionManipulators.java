@@ -31,44 +31,34 @@ public class ExpressionManipulators {
     private static double toDoubleHelper(IDictionary<String, AstNode> variables, AstNode node) {
         // There are three types of nodes, so we have three cases.
         if (node.isNumber()) {
-            // TODO: your code here
-            throw new NotYetImplementedException();
+            return node.getNumericValue();
         } else if (node.isVariable()) {
             if (!variables.containsKey(node.getName())) {
                 // If the expression contains an undefined variable, we give up.
                 throw new EvaluationError("Undefined variable: " + node.getName());
             }
-            // TODO: your code here
-            throw new NotYetImplementedException();
+            	return variables.get(node.getName()).getNumericValue();
         } else {
             String name = node.getName();
 
-            // TODO: your code here
-
             if (name.equals("+")) {
-                // TODO: your code here
-                throw new NotYetImplementedException();
+                return toDoubleHelper(variables, node.getChildren().get(0)) + toDoubleHelper(variables, node.getChildren().get(1));
             } else if (name.equals("-")) {
-                // TODO: your code here
-                throw new NotYetImplementedException();
+                return toDoubleHelper(variables, node.getChildren().get(0)) - toDoubleHelper(variables, node.getChildren().get(1));
             } else if (name.equals("*")) {
-                // TODO: your code here
-                throw new NotYetImplementedException();
+                return toDoubleHelper(variables, node.getChildren().get(0)) * toDoubleHelper(variables,
+                node.getChildren().get(1));
             } else if (name.equals("/")) {
-                // TODO: your code here
-                throw new NotYetImplementedException();
+                return toDoubleHelper(variables, node.getChildren().get(0)) / toDoubleHelper(variables,
+                node.getChildren().get(1));
             } else if (name.equals("^")) {
-                // TODO: your code here
-                throw new NotYetImplementedException();
+                return Math.pow(toDoubleHelper(variables, node.getChildren().get(0)), toDoubleHelper(variables, node.getChildren().get(1)));
             } else if (name.equals("negate")) {
-                // TODO: your code here
-                throw new NotYetImplementedException();
+                return -(toDoubleHelper(variables, node.getChildren().get(0)));
             } else if (name.equals("sin")) {
-                // TODO: your code here
-                throw new NotYetImplementedException();
+                return Math.sin(toDoubleHelper(variables, node.getChildren().get(0)));
             } else if (name.equals("cos")) {
-                // TODO: your code here
-                throw new NotYetImplementedException();
+                return Math.cos(toDoubleHelper(variables, node.getChildren().get(0)));
             } else {
                 throw new EvaluationError("Unknown operation: " + name);
             }
