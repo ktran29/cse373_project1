@@ -71,10 +71,42 @@ public class ExpressionManipulators {
         //         to your "toDouble" method
         // Hint 2: When you're implementing constant folding, you may want
         //         to call your "toDouble" method in some way
-
-        // TODO: Your code here
-        throw new NotYetImplementedException();
+    	
+    		if(node.isOperation()) {
+    			String name = node.getName();
+    			
+    			if (name.equals("simplify")) {
+    				System.out.println("maybe");
+    				return simplify(env, node.getChildren().get(0));
+    			} else {
+    				if (name.equals("+")) {
+    					
+    				} else if (name.equals("-")) {
+    					
+    				} else if (name.equals("*")) {
+    					
+    				} else if (name.equals("^")) {
+    				
+    				} else if (name.equals("negate")) {
+    					
+    				} else {
+    					
+    				}
+    				System.out.println("dunno");
+    				return new AstNode("" + simplify(env, node.getChildren().get(0)) + simplify(env, node.getChildren().get(1)));
+    			}
+    		} else {
+    			if (node.isNumber()) {
+    	    			System.out.println("yes");
+    				return new AstNode(node.getNumericValue());
+    			} else {
+    	    			System.out.println("no");
+    				return new AstNode(node.getName());
+    			}
+    		}
     }
+    
+
 
     /**
      * Expected signature of plot:
