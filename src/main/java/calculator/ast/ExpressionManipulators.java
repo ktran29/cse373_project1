@@ -5,8 +5,8 @@ import calculator.errors.EvaluationError;
 import calculator.gui.ImageDrawer;
 import datastructures.interfaces.IDictionary;
 import misc.exceptions.NotYetImplementedException;
-import java.lang.*;
 import datastructures.concrete.DoubleLinkedList;
+
 /**
  * All of the static methods in this class are given the exact same parameters for
  * consistency. You can often ignore some of these parameters when implementing your
@@ -38,11 +38,21 @@ public class ExpressionManipulators {
             if (!variables.containsKey(node.getName())) {
                 // If the expression contains an undefined variable, we give up.
                 throw new EvaluationError("Undefined variable: " + node.getName());
+            } else {
+            		AstNode variable = variables.get(node.getName());
+            		if (variable.isNumber()) {
+            			return variable.getNumericValue();
+            		} else {
+            			return toDoubleHelper(variables, variable);
+            		}
             }
-            	return variables.get(node.getName()).getNumericValue();
         } else {
             String name = node.getName();
 
+            	if(name.equals("toDouble")) {
+            		return toDoubleHelper(variables, node.getChildren().get(0));
+            	}
+            
             if (name.equals("+")) {
                 return toDoubleHelper(variables, node.getChildren().get(0)) + toDoubleHelper(variables, node.getChildren().get(1));
             } else if (name.equals("-")) {
@@ -76,69 +86,77 @@ public class ExpressionManipulators {
     	
     		
     	
-    		return simplifyHelper(node.getChildren().get(0));
+    		return simplifyHelper(env.getVariables(), node.getChildren().get(0));
     }
     
-    private static AstNode simplifyHelper(AstNode node) {
+    private static AstNode simplifyHelper(IDictionary<String, AstNode> variables, AstNode node) {
 		if(node.isOperation()) {
 			String operation = node.getName();
 			
+			AstNode leftChild = simplifyHelper(variables, node.getChildren().get(0));
+			AstNode rightChild = new AstNode(0);
+			if(node.getChildren().size() > 1) {
+				rightChild = simplifyHelper(variables, node.getChildren().get(1));
+			}
+			
 			switch (operation) {
 				case "+": {
-
-					AstNode leftChild = simplifyHelper(node.getChildren().get(0));
-					AstNode rightChild = simplifyHelper(node.getChildren().get(1));
 					
 					if (leftChild.isNumber() && rightChild.isNumber()) {
-						System.out.println("yes");
-						System.out.println(leftChild.getNumericValue() + rightChild.getNumericValue());
-						return new AstNode(leftChild.getNumericValue() + rightChild.getNumericValue());
+						return new AstNode((int) (leftChild.getNumericValue() + rightChild.getNumericValue()));
+					} else {
+						node.getChildren().set(0, leftChild);
+						node.getChildren().set(1, rightChild);
+						return node;
 					}
-					return node;
 					
 				}
 				case "-": {
-					AstNode leftChild = simplifyHelper(node.getChildren().get(0));
-					AstNode rightChild = simplifyHelper(node.getChildren().get(1));
 					
 					if (leftChild.isNumber() && rightChild.isNumber()) {
-						return new AstNode(leftChild.getNumericValue() - rightChild.getNumericValue());
+						return new AstNode((int) (leftChild.getNumericValue() - rightChild.getNumericValue()));
+					} else {
+						node.getChildren().set(0, leftChild);
+						node.getChildren().set(1, rightChild);
+						return node;
 					}
-					return node;
 				}
 				
 				case "*": {
-					AstNode leftChild = simplifyHelper(node.getChildren().get(0));
-					AstNode rightChild = simplifyHelper(node.getChildren().get(1));
 					
 					if (leftChild.isNumber() && rightChild.isNumber()) {
-						return new AstNode(leftChild.getNumericValue() * rightChild.getNumericValue());
+						return new AstNode((int) (leftChild.getNumericValue() * rightChild.getNumericValue()));
+					} else {
+						node.getChildren().set(0, leftChild);
+						node.getChildren().set(1, rightChild);
+						return node;
 					}
-					return node;
 				}
 					
 				case "^": {
-					AstNode leftChild = simplifyHelper(node.getChildren().get(0));
-					AstNode rightChild = simplifyHelper(node.getChildren().get(1));
-					
 					if (leftChild.isNumber() && rightChild.isNumber()) {
-						return new AstNode(Math.pow(leftChild.getNumericValue(), rightChild.getNumericValue()));
+						return new AstNode((int) Math.pow(leftChild.getNumericValue(), rightChild.getNumericValue()));
+					} else {
+						node.getChildren().set(0, leftChild);
+						node.getChildren().set(1, rightChild);
+						return node;
 					}
-					return node;
 				}
 					
 				case "negate": {
 					
-					AstNode leftChild = simplifyHelper(node.getChildren().get(0));
-					AstNode rightChild = simplifyHelper(node.getChildren().get(1));
-					
-					if (leftChild.isNumber() && rightChild.isNumber()) {
-						return new AstNode(-1 * (leftChild.getNumericValue() + rightChild.getNumericValue()));
+					if (leftChild.isNumber()) {
+						return new AstNode(-1 * (int) leftChild.getNumericValue());
+					} else {
+						return new AstNode("-" + leftChild.getName());
 					}
-					return node;
 				}
 				
 				default: {
+					node.getChildren().set(0, leftChild);
+					if(node.getChildren().size() > 1) {
+						node.getChildren().set(1, rightChild);
+					}
 					return node;
 				}
 			
@@ -148,10 +166,15 @@ public class ExpressionManipulators {
 			if (node.isNumber()) {
 				return new AstNode(node.getNumericValue());
 			} else {
-//				if (!variables.containsKey(node.getName())) {
-	                return new AstNode(node.getName());
-//	            }
-//	            	return new AstNode(node.getNumericValue());
+				if (variables.containsKey(node.getName())) {
+					if (!variables.get(node.getName()).isNumber()) {
+						return variables.get(node.getName());
+					} else {
+						return new AstNode(variables.get(node.getName()).getNumericValue());
+					}
+				} else {
+					return new AstNode(node.getName());
+				}
 			}
 		}
     }
