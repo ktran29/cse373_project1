@@ -144,11 +144,8 @@ public class ExpressionManipulators {
 				}
 					
 				case "negate": {
-					
 					if (leftChild.isNumber()) {
 						return new AstNode(-1 * (int) leftChild.getNumericValue());
-					} else {
-						return new AstNode("-" + leftChild.getName());
 					}
 				}
 				
