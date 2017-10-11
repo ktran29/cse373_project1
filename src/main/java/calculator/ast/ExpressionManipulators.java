@@ -4,6 +4,7 @@ import calculator.interpreter.Environment;
 import calculator.errors.EvaluationError;
 import datastructures.interfaces.IDictionary;
 import misc.exceptions.NotYetImplementedException;
+import java.lang.*;
 
 /**
  * All of the static methods in this class are given the exact same parameters for
@@ -72,38 +73,86 @@ public class ExpressionManipulators {
         // Hint 2: When you're implementing constant folding, you may want
         //         to call your "toDouble" method in some way
     	
-    		if(node.isOperation()) {
-    			String name = node.getName();
-    			
-    			if (name.equals("simplify")) {
-    				System.out.println("maybe");
-    				return simplify(env, node.getChildren().get(0));
-    			} else {
-    				if (name.equals("+")) {
-    					
-    				} else if (name.equals("-")) {
-    					
-    				} else if (name.equals("*")) {
-    					
-    				} else if (name.equals("^")) {
-    				
-    				} else if (name.equals("negate")) {
-    					
-    				} else {
-    					
-    				}
-    				System.out.println("dunno");
-    				return new AstNode("" + simplify(env, node.getChildren().get(0)) + simplify(env, node.getChildren().get(1)));
-    			}
-    		} else {
-    			if (node.isNumber()) {
-    	    			System.out.println("yes");
-    				return new AstNode(node.getNumericValue());
-    			} else {
-    	    			System.out.println("no");
-    				return new AstNode(node.getName());
-    			}
-    		}
+    		
+    	
+    		return simplifyHelper(node.getChildren().get(0));
+    }
+    
+    private static AstNode simplifyHelper(AstNode node) {
+		if(node.isOperation()) {
+			String operation = node.getName();
+			
+			switch (operation) {
+				case "+": {
+
+					AstNode leftChild = simplifyHelper(node.getChildren().get(0));
+					AstNode rightChild = simplifyHelper(node.getChildren().get(1));
+					
+					if (leftChild.isNumber() && rightChild.isNumber()) {
+						System.out.println("yes");
+						System.out.println(leftChild.getNumericValue() + rightChild.getNumericValue());
+						return new AstNode(leftChild.getNumericValue() + rightChild.getNumericValue());
+					}
+					return node;
+					
+				}
+				case "-": {
+					AstNode leftChild = simplifyHelper(node.getChildren().get(0));
+					AstNode rightChild = simplifyHelper(node.getChildren().get(1));
+					
+					if (leftChild.isNumber() && rightChild.isNumber()) {
+						return new AstNode(leftChild.getNumericValue() - rightChild.getNumericValue());
+					}
+					return node;
+				}
+				
+				case "*": {
+					AstNode leftChild = simplifyHelper(node.getChildren().get(0));
+					AstNode rightChild = simplifyHelper(node.getChildren().get(1));
+					
+					if (leftChild.isNumber() && rightChild.isNumber()) {
+						return new AstNode(leftChild.getNumericValue() * rightChild.getNumericValue());
+					}
+					return node;
+				}
+					
+				case "^": {
+					AstNode leftChild = simplifyHelper(node.getChildren().get(0));
+					AstNode rightChild = simplifyHelper(node.getChildren().get(1));
+					
+					if (leftChild.isNumber() && rightChild.isNumber()) {
+						return new AstNode(Math.pow(leftChild.getNumericValue(), rightChild.getNumericValue()));
+					}
+					return node;
+				}
+					
+				case "negate": {
+					
+					AstNode leftChild = simplifyHelper(node.getChildren().get(0));
+					AstNode rightChild = simplifyHelper(node.getChildren().get(1));
+					
+					if (leftChild.isNumber() && rightChild.isNumber()) {
+						return new AstNode(-1 * (leftChild.getNumericValue() + rightChild.getNumericValue()));
+					}
+					return node;
+				}
+				
+				default: {
+					return node;
+				}
+			
+			}
+			
+		} else {
+			if (node.isNumber()) {
+				return new AstNode(node.getNumericValue());
+			} else {
+//				if (!variables.containsKey(node.getName())) {
+	                return new AstNode(node.getName());
+//	            }
+//	            	return new AstNode(node.getNumericValue());
+			}
+		}
     }
     
 
