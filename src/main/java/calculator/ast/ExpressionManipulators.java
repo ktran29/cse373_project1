@@ -109,6 +109,30 @@ public class ExpressionManipulators {
      * @throws EvaluationError  if 'step' is zero or negative
      */
     public static AstNode plot(Environment env, AstNode node) {
+    	double step = node.getChildren().get(4).getNumericValue();
+    	if (step <= 0) {
+    		throw new EvaluationError("Step value must be positive");
+    	}
+    	double varMin = node.getChildren().get(3).getNumericValue();
+    	double varMax = node.getChildren().get(2).getNumericValue();
+    	if (varMin > varMax) {
+    		throw new EvaluationError("varMin must be smaller or equal to varMax");
+    	}
+    	int totalPoints = (int) (((varMax - varMin) / step) + 1);
+    	double[] xValues = new double[totalPoints];
+    	for (int i = 0; i < xValues.length; i++) {
+    		xValues[i] = varMin + (step*i);
+    	}
+    	double[] yValues = new double[totalPoints];
+    	// double currentValue = 0;
+    	String var = node.getChildren().get(2).getName();
+    	if (!env.getVariables().containsKey(var)) {
+    		throw new EvaluationError("Variable to plot already defined in expression");
+    	}
+    	for (int i = 0; i <= xValues.length; i++) {
+    		env.getVariables().put(var, xValues[i]);
+    	}
+    	
         throw new NotYetImplementedException();
 
         // Note: every single function we add MUST return an
