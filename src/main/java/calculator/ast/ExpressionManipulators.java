@@ -4,6 +4,7 @@ import calculator.interpreter.Environment;
 import calculator.errors.EvaluationError;
 import calculator.gui.ImageDrawer;
 import datastructures.interfaces.IDictionary;
+import datastructures.interfaces.IList;
 import misc.exceptions.NotYetImplementedException;
 import datastructures.concrete.DoubleLinkedList;
 
@@ -220,8 +221,8 @@ public class ExpressionManipulators {
 		int totalPoints = (int) (((varMax - varMin) / step) + 1);
 		String var = node.getChildren().get(1).getName();
 
-		DoubleLinkedList<Double> xValues = new DoubleLinkedList<Double>();
-		DoubleLinkedList<Double> yValues = new DoubleLinkedList<Double>();
+		IList<Double> xValues = new DoubleLinkedList<Double>();
+		IList<Double> yValues = new DoubleLinkedList<Double>();
 		for (int i = 0; i < totalPoints; i++) {
 			double currentX = (varMin + (step*i));
 			xValues.add(currentX);
