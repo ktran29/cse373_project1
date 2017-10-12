@@ -50,11 +50,9 @@ public class ExpressionManipulators {
         } else {
             String name = node.getName();
 
-            	if(name.equals("toDouble") || name.equals("plot")) {
+            	if (name.equals("toDouble") || name.equals("plot")) {
             		return toDoubleHelper(variables, node.getChildren().get(0));
-            	}
-            
-            if (name.equals("+")) {
+            	} else if (name.equals("+")) {
                 return toDoubleHelper(variables, node.getChildren().get(0)) + toDoubleHelper(variables, node.getChildren().get(1));
             } else if (name.equals("-")) {
                 return toDoubleHelper(variables, node.getChildren().get(0)) - toDoubleHelper(variables, node.getChildren().get(1));
@@ -85,72 +83,76 @@ public class ExpressionManipulators {
         // Hint 2: When you're implementing constant folding, you may want
         //         to call your "toDouble" method in some way
     	
-    		
-    	
     		return simplifyHelper(env.getVariables(), node.getChildren().get(0));
     }
     
     private static AstNode simplifyHelper(IDictionary<String, AstNode> variables, AstNode node) {
 		if (node.isOperation()) {
-			String operation = node.getName();
-			
-			AstNode leftChild = simplifyHelper(variables, node.getChildren().get(0));
-			AstNode rightChild = new AstNode(0);
-			if(node.getChildren().size() > 1) {
-				rightChild = simplifyHelper(variables, node.getChildren().get(1));
-			}
-			
-			switch (operation) {
-				case "+": case "-": case "*": case "^": {
-					
-					if (leftChild.isNumber() && rightChild.isNumber()) {
-						if (operation.equals("+")) {
-							return new AstNode((int) (leftChild.getNumericValue() + rightChild.getNumericValue()));
-						} else if (operation.equals("-")) {
-							return new AstNode((int) (leftChild.getNumericValue() - rightChild.getNumericValue()));
-						} else if (operation.equals("*")) {
-							return new AstNode((int) (leftChild.getNumericValue() * rightChild.getNumericValue()));
-						} else if (operation.equals("^")) {
-							return new AstNode((int) Math.pow(leftChild.getNumericValue(), rightChild.getNumericValue()));
-						}
-
-					} else {
-						node.getChildren().set(0, leftChild);
-						node.getChildren().set(1, rightChild);
-						return node;
-					}
-					
-				}
-					
-				case "negate": {
-					if (leftChild.isNumber()) {
-						return new AstNode(-1 * (int) leftChild.getNumericValue());
-					}
-				}
+			return handleOperations(variables, node);
+		} else {
+			return handleNumbersAndVariables(variables, node);
+		}
+    }
+    
+    private static AstNode handleOperations(IDictionary<String, AstNode> variables, AstNode node) {
+    		String operation = node.getName();
+		
+		AstNode leftChild = simplifyHelper(variables, node.getChildren().get(0));
+		AstNode rightChild = new AstNode(0);
+		if(node.getChildren().size() > 1) {
+			rightChild = simplifyHelper(variables, node.getChildren().get(1));
+		}
+		
+		switch (operation) {
+			case "+": case "-": case "*": case "^": {
 				
-				default: {
-					node.getChildren().set(0, leftChild);
-					if(node.getChildren().size() > 1) {
-						node.getChildren().set(1, rightChild);
+				if (leftChild.isNumber() && rightChild.isNumber()) {
+					if (operation.equals("+")) {
+						return new AstNode((int) (leftChild.getNumericValue() + rightChild.getNumericValue()));
+					} else if (operation.equals("-")) {
+						return new AstNode((int) (leftChild.getNumericValue() - rightChild.getNumericValue()));
+					} else if (operation.equals("*")) {
+						return new AstNode((int) (leftChild.getNumericValue() * rightChild.getNumericValue()));
+					} else if (operation.equals("^")) {
+						return new AstNode((int) Math.pow(leftChild.getNumericValue(), rightChild.getNumericValue()));
 					}
+
+				} else {
+					node.getChildren().set(0, leftChild);
+					node.getChildren().set(1, rightChild);
 					return node;
 				}
-			
+				
+			}
+				
+			case "negate": {
+				if (leftChild.isNumber()) {
+					return new AstNode(-1 * (int) leftChild.getNumericValue());
+				}
 			}
 			
-		} else {
-			if (node.isNumber()) {
-				return new AstNode(node.getNumericValue());
-			} else {
-				if (variables.containsKey(node.getName())) {
-					if (!variables.get(node.getName()).isNumber()) {
-						return variables.get(node.getName());
-					} else {
-						return new AstNode(variables.get(node.getName()).getNumericValue());
-					}
-				} else {
-					return new AstNode(node.getName());
+			default: {
+				node.getChildren().set(0, leftChild);
+				if (node.getChildren().size() > 1) {
+					node.getChildren().set(1, rightChild);
 				}
+				return node;
+			}
+		}
+    }
+    
+    private static AstNode handleNumbersAndVariables(IDictionary<String, AstNode> variables, AstNode node) {
+	    	if (node.isNumber()) {
+			return new AstNode(node.getNumericValue());
+		} else {
+			if (variables.containsKey(node.getName())) {
+				if (!variables.get(node.getName()).isNumber()) {
+					return variables.get(node.getName());
+				} else {
+					return new AstNode(variables.get(node.getName()).getNumericValue());
+				}
+			} else {
+				return new AstNode(node.getName());
 			}
 		}
     }
@@ -201,7 +203,7 @@ public class ExpressionManipulators {
     		if (stepNode.isNumber()) {
         		step = stepNode.getNumericValue();
     		} else if (!variables.containsKey(stepNode.getName())) {
-    			throw new EvaluationError("Unexpected");
+    			throw new EvaluationError("Unexpected key value");
     		} else {
     			step = variables.get(stepNode.getName()).getNumericValue();
     		}
@@ -247,16 +249,16 @@ public class ExpressionManipulators {
      * @throws EvaluationError if node contains an undefined variable
      */
     private static double nodeToNumber(IDictionary<String, AstNode> variables, AstNode node, double value) {
-    	if (node.isNumber()) {
-    		value = node.getNumericValue();
-    	} else if (node.isOperation()){
-    		value = toDoubleHelper(variables, node);
-    	} else {
-    		if (!variables.containsKey(node.getName())) {
-    			throw new EvaluationError("Unexpected");
-    		}
-    		value = variables.get(node.getName()).getNumericValue();
-    	}
-    	return value;
-    }
+		if (node.isNumber()) {
+			value = node.getNumericValue();
+		} else if (node.isOperation()){
+			value = toDoubleHelper(variables, node);
+		} else {
+			if (!variables.containsKey(node.getName())) {
+				throw new EvaluationError("Unexpected key value");
+			}
+			value = variables.get(node.getName()).getNumericValue();
+		}
+		return value;
+	}
 }
