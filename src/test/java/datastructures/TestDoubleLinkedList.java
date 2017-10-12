@@ -563,6 +563,16 @@ public class TestDoubleLinkedList extends BaseTest {
     }
 
     @Test(timeout=SECOND)
+    public void testSizeUpdateOnDelete() {
+    	IList<String> list = makeBasicList();
+    	list.delete(1);
+    	assertEquals(2, list.size());
+    	list.delete(0);
+    	assertEquals(1, list.size());
+    	list.delete(0);
+    	assertEquals(0, list.size());
+    }
+    @Test(timeout=SECOND)
     public void testDeleteOutOfBoundsThrowsException() {
         IList<String> list = this.makeBasicList();
         try {
