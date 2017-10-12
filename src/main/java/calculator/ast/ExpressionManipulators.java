@@ -155,7 +155,6 @@ public class ExpressionManipulators {
     }
     
 
-
     /**
      * Expected signature of plot:
      *
@@ -209,31 +208,11 @@ public class ExpressionManipulators {
     		if (step < 0) {
     			throw new EvaluationError("Step value must be positive");
     		}
-		double varMin = 0;
+		double varMin = 0; 
 		double varMax = 0;
-				
-		if (minNode.isNumber()) {
-    			varMin = minNode.getNumericValue();
-		} else if (minNode.isOperation()){
-			varMin = toDoubleHelper(variables, minNode);
-		} else {
-			if (!variables.containsKey(minNode.getName())) {
-				throw new EvaluationError("Unexpected");
-			}
-			varMin = variables.get(minNode.getName()).getNumericValue();
-		}
 		
-		if (maxNode.isNumber()) {
-    			varMax = maxNode.getNumericValue();
-		} else if (maxNode.isOperation()){
-			varMin = toDoubleHelper(variables, maxNode);
-		} else {
-			if (!variables.containsKey(maxNode.getName())) {
-				throw new EvaluationError("Unexpected");
-			}
-			varMax = variables.get(maxNode.getName()).getNumericValue();
-		}
-		
+		varMin = nodeToNumber(variables, minNode, varMin);
+		varMax = nodeToNumber(variables, maxNode, varMax);
 		
 		if (varMin > varMax) {
 			throw new EvaluationError("varMin must be smaller or equal to varMax");
@@ -252,19 +231,31 @@ public class ExpressionManipulators {
 			double currentY = yNode.getNumericValue();
 			yValues.add(currentY);
 		}
-		env.getVariables().remove(var);
-		
+		env.getVariables().remove(var);	
 		env.getImageDrawer().drawScatterPlot("", "X", "Y", xValues, yValues);
 
-        // Note: every single function we add MUST return an
-        // AST node that your "simplify" function is capable of handling.
-        // However, your "simplify" function doesn't really know what to do
-        // with "plot" functions (and what is the "plot" function supposed to
-        // evaluate to anyways?) so we'll settle for just returning an
-        // arbitrary number.
-        //
-        // When working on this method, you should uncomment the following line:
-        //
         return new AstNode(1);
+    }
+    
+    /**
+     * 
+     * Takes AstNode and converts it into double
+     * 
+     * Returns resulting double value
+     * 
+     * @throws EvaluationError if node contains an undefined variable
+     */
+    private static double nodeToNumber(IDictionary<String, AstNode> variables, AstNode node, double value) {
+    	if (node.isNumber()) {
+    		value = node.getNumericValue();
+    	} else if (node.isOperation()){
+    		value = toDoubleHelper(variables, node);
+    	} else {
+    		if (!variables.containsKey(node.getName())) {
+    			throw new EvaluationError("Unexpected");
+    		}
+    		value = variables.get(node.getName()).getNumericValue();
+    	}
+    	return value;
     }
 }
