@@ -177,11 +177,11 @@ public class DoubleLinkedList<T> implements IList<T> {
         		throw new IndexOutOfBoundsException();
         }
         if (index == 0) {
+        		returnedValue = front.data;
         		if (front.next == null) {
         			front = null;
         			back = null;
         		} else {
-        			returnedValue = front.data;
         			front.next.prev = null;
         			front = front.next;
         		}

@@ -49,7 +49,7 @@ public class ExpressionManipulators {
         } else {
             String name = node.getName();
 
-            	if(name.equals("toDouble")) {
+            	if(name.equals("toDouble") || name.equals("plot")) {
             		return toDoubleHelper(variables, node.getChildren().get(0));
             	}
             
@@ -90,7 +90,7 @@ public class ExpressionManipulators {
     }
     
     private static AstNode simplifyHelper(IDictionary<String, AstNode> variables, AstNode node) {
-		if(node.isOperation()) {
+		if (node.isOperation()) {
 			String operation = node.getName();
 			
 			AstNode leftChild = simplifyHelper(variables, node.getChildren().get(0));
@@ -100,47 +100,25 @@ public class ExpressionManipulators {
 			}
 			
 			switch (operation) {
-				case "+": {
+				case "+": case "-": case "*": case "^": {
 					
 					if (leftChild.isNumber() && rightChild.isNumber()) {
-						return new AstNode((int) (leftChild.getNumericValue() + rightChild.getNumericValue()));
+						if (operation.equals("+")) {
+							return new AstNode((int) (leftChild.getNumericValue() + rightChild.getNumericValue()));
+						} else if (operation.equals("-")) {
+							return new AstNode((int) (leftChild.getNumericValue() - rightChild.getNumericValue()));
+						} else if (operation.equals("*")) {
+							return new AstNode((int) (leftChild.getNumericValue() * rightChild.getNumericValue()));
+						} else if (operation.equals("^")) {
+							return new AstNode((int) Math.pow(leftChild.getNumericValue(), rightChild.getNumericValue()));
+						}
+
 					} else {
 						node.getChildren().set(0, leftChild);
 						node.getChildren().set(1, rightChild);
 						return node;
 					}
 					
-				}
-				case "-": {
-					
-					if (leftChild.isNumber() && rightChild.isNumber()) {
-						return new AstNode((int) (leftChild.getNumericValue() - rightChild.getNumericValue()));
-					} else {
-						node.getChildren().set(0, leftChild);
-						node.getChildren().set(1, rightChild);
-						return node;
-					}
-				}
-				
-				case "*": {
-					
-					if (leftChild.isNumber() && rightChild.isNumber()) {
-						return new AstNode((int) (leftChild.getNumericValue() * rightChild.getNumericValue()));
-					} else {
-						node.getChildren().set(0, leftChild);
-						node.getChildren().set(1, rightChild);
-						return node;
-					}
-				}
-					
-				case "^": {
-					if (leftChild.isNumber() && rightChild.isNumber()) {
-						return new AstNode((int) Math.pow(leftChild.getNumericValue(), rightChild.getNumericValue()));
-					} else {
-						node.getChildren().set(0, leftChild);
-						node.getChildren().set(1, rightChild);
-						return node;
-					}
 				}
 					
 				case "negate": {
@@ -211,34 +189,72 @@ public class ExpressionManipulators {
      * @throws EvaluationError  if 'step' is zero or negative
      */
     public static AstNode plot(Environment env, AstNode node) {
-    	double step = node.getChildren().get(4).getNumericValue();
-    	if (step <= 0) {
-    		throw new EvaluationError("Step value must be positive");
-    	}
-    	double varMin = node.getChildren().get(2).getNumericValue();
-    	double varMax = node.getChildren().get(3).getNumericValue();
-    	if (varMin > varMax) {
-    		throw new EvaluationError("varMin must be smaller or equal to varMax");
-    	}
-    	int totalPoints = (int) (((varMax - varMin) / step) + 1);
-    	String var = node.getChildren().get(2).getName();
-    	if (!env.getVariables().containsKey(var)) {
-    		throw new EvaluationError("Variable to plot already defined in expression");
-    	}
-    	DoubleLinkedList<Double> xValues = new DoubleLinkedList<Double>();
-    	DoubleLinkedList<Double> yValues = new DoubleLinkedList<Double>();
-    	for (int i = 0; i < totalPoints; i++) {
-    		double currentX = (varMin + (step*i));
-    		xValues.add(currentX);
-    		AstNode xNode = new AstNode(currentX);
-    		env.getVariables().put(var, xNode);
-    		AstNode yNode = toDouble(env, node);
-    		double currentY = yNode.getNumericValue();
-    		yValues.add(currentY);
-    	}
-    	env.getVariables().remove(var);
+    		
+	    	IDictionary<String, AstNode> variables = env.getVariables();
+	    	
+	    	AstNode stepNode = node.getChildren().get(4);
+	    	AstNode minNode = node.getChildren().get(2);
+	    	AstNode maxNode = node.getChildren().get(3);
     	
-    	env.getImageDrawer().drawScatterPlot("", "X", "Y", xValues, yValues);
+	    	double step = 0;
+	    	
+    		if (stepNode.isNumber()) {
+        		step = stepNode.getNumericValue();
+    		} else if (!variables.containsKey(stepNode.getName())) {
+    			throw new EvaluationError("Unexpected");
+    		} else {
+    			step = variables.get(stepNode.getName()).getNumericValue();
+    		}
+    		
+    		if (step < 0) {
+    			throw new EvaluationError("Step value must be positive");
+    		}
+		double varMin = 0;
+		double varMax = 0;
+				
+		if (minNode.isNumber()) {
+    			varMin = minNode.getNumericValue();
+		} else if (minNode.isOperation()){
+			varMin = toDoubleHelper(variables, minNode);
+		} else {
+			if (!variables.containsKey(minNode.getName())) {
+				throw new EvaluationError("Unexpected");
+			}
+			varMin = variables.get(minNode.getName()).getNumericValue();
+		}
+		
+		if (maxNode.isNumber()) {
+    			varMax = maxNode.getNumericValue();
+		} else if (maxNode.isOperation()){
+			varMin = toDoubleHelper(variables, maxNode);
+		} else {
+			if (!variables.containsKey(maxNode.getName())) {
+				throw new EvaluationError("Unexpected");
+			}
+			varMax = variables.get(maxNode.getName()).getNumericValue();
+		}
+		
+		
+		if (varMin > varMax) {
+			throw new EvaluationError("varMin must be smaller or equal to varMax");
+		}
+		int totalPoints = (int) (((varMax - varMin) / step) + 1);
+		String var = node.getChildren().get(1).getName();
+
+		DoubleLinkedList<Double> xValues = new DoubleLinkedList<Double>();
+		DoubleLinkedList<Double> yValues = new DoubleLinkedList<Double>();
+		for (int i = 0; i < totalPoints; i++) {
+			double currentX = (varMin + (step*i));
+			xValues.add(currentX);
+			AstNode xNode = new AstNode(currentX);
+			env.getVariables().put(var, xNode);
+			AstNode yNode = toDouble(env, node);
+			double currentY = yNode.getNumericValue();
+			yValues.add(currentY);
+		}
+		env.getVariables().remove(var);
+		
+		env.getImageDrawer().drawScatterPlot("", "X", "Y", xValues, yValues);
 
         // Note: every single function we add MUST return an
         // AST node that your "simplify" function is capable of handling.

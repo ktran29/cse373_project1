@@ -147,7 +147,7 @@ public class TestCalculator extends BaseTest {
                 		+ ") * (a + 2 * (1 + 1))"));
     }
 
-    @Test(timeout=SECOND)
+    @Test//(timeout=SECOND)
     public void testPlotInputs() {
         FakeImageDrawer drawer = new FakeImageDrawer();
 

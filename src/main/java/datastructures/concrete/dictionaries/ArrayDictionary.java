@@ -68,9 +68,6 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
      */
     @Override
     public void put(K key, V value) {
-    		if(key.equals("x")) {
-    			System.out.println(value);
-    		}
         int index = 0;
         boolean foundKey = false;
         for (int i = 0; i < pairs.length; i++) {
@@ -78,7 +75,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
             	index = i - 1;
             	i = pairs.length;
             }
-        	else if (pairs[i].key.equals(key) || pairs[i].key == key) {
+        	else if (pairs[i].key == key || pairs[i].key.equals(key) ) {
                 foundKey = true;
                 index = i - 1;
                 i = pairs.length;
